@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,8 +38,8 @@ class ReservaRepositoryTest {
         Reserva reserva = new Reserva();
         reserva.setNombreInquilino("Usuario Test");
         reserva.setEmailInquilino("usuario@test.com");
-        reserva.setFechaEntrada(LocalDate.of(2026, 7, 1));
-        reserva.setFechaSalida(LocalDate.of(2026, 7, 5));
+        reserva.setFechaEntrada(LocalDate.of(2026, Month.JULY, 1));
+        reserva.setFechaSalida(LocalDate.of(2026, Month.JULY, 5));
         reserva.setMetodoPago("PayPal");
         reserva.setEstado("PENDIENTE");
         reserva.setImporteTotal(480.0);
