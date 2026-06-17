@@ -1,23 +1,20 @@
 package es.uclm.alquilerviviendas;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(properties = {
-        "spring.datasource.url=jdbc:h2:mem:testdb",
-        "spring.datasource.driverClassName=org.h2.Driver",
-        "spring.datasource.username=sa",
-        "spring.datasource.password=",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-        "spring.jpa.open-in-view=false"
-})
+@SpringBootTest
 class AlquilerViviendasApplicationTests {
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Test
     void contextLoads() {
-        assertTrue(true, "El contexto de Spring Boot se carga correctamente.");
+        assertNotNull(applicationContext);
     }
 }
