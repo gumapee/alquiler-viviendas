@@ -9,8 +9,38 @@
 
     <p>Listado de viviendas y habitaciones registradas en el sistema.</p>
 
+    <h2>Buscar alojamiento</h2>
+
+    <form action="/propiedades/buscar" method="get">
+        <p>
+            <label for="ciudad">Ciudad:</label><br>
+            <input type="text" id="ciudad" name="ciudad" th:value="${ciudad}">
+        </p>
+
+        <p>
+            <label for="tipo">Tipo:</label><br>
+            <select id="tipo" name="tipo">
+                <option value="">Cualquiera</option>
+                <option value="Vivienda completa" th:selected="${tipo == 'Vivienda completa'}">Vivienda completa</option>
+                <option value="Habitación individual" th:selected="${tipo == 'Habitación individual'}">Habitación individual</option>
+            </select>
+        </p>
+
+        <p>
+            <label for="reservaInmediata">Reserva inmediata:</label><br>
+            <select id="reservaInmediata" name="reservaInmediata">
+                <option value="">Cualquiera</option>
+                <option value="true" th:selected="${reservaInmediata == 'true'}">Sí</option>
+                <option value="false" th:selected="${reservaInmediata == 'false'}">No</option>
+            </select>
+        </p>
+
+        <button type="submit">Buscar</button>
+        <a href="/propiedades">Limpiar búsqueda</a>
+    </form>
+
     <p>
-    <a href="/propiedades/nueva">Registrar nueva propiedad</a>
+        <a href="/propiedades/nueva">Registrar nueva propiedad</a>
     </p>
 
     <table border="1">
