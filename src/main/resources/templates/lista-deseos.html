@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de deseos</title>
+</head>
+<body>
+    <h1>Lista de deseos</h1>
+
+    <p>
+        Usuario simulado:
+        <strong th:text="${emailUsuario}">usuario@demo.com</strong>
+    </p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Ciudad</th>
+                <th>Tipo</th>
+                <th>Precio por noche</th>
+                <th>Reserva inmediata</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="deseo : ${deseos}">
+                <td th:text="${deseo.propiedad.titulo}">Título</td>
+                <td th:text="${deseo.propiedad.ciudad}">Ciudad</td>
+                <td th:text="${deseo.propiedad.tipo}">Tipo</td>
+                <td th:text="${deseo.propiedad.precioPorNoche} + ' €'">Precio</td>
+                <td th:text="${deseo.propiedad.reservaInmediata ? 'Sí' : 'No'}">Reserva inmediata</td>
+                <td>
+                    <a th:href="@{/reservas/nueva(propiedadId=${deseo.propiedad.id})}">Reservar</a>
+
+                    <form th:action="@{/lista-deseos/{id}/eliminar(id=${deseo.id})}"
+                          method="post"
+                          style="display:inline;">
+                        <button type="submit">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <a href="/propiedades">Ver propiedades</a>
+    </p>
+
+    <p>
+        <a href="/">Volver al inicio</a>
+    </p>
+</body>
+</html>

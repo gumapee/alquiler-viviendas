@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Propiedades disponibles</title>
 </head>
+
 <body>
     <h1>Propiedades disponibles</h1>
 
@@ -21,8 +23,10 @@
             <label for="tipo">Tipo:</label><br>
             <select id="tipo" name="tipo">
                 <option value="">Cualquiera</option>
-                <option value="Vivienda completa" th:selected="${tipo == 'Vivienda completa'}">Vivienda completa</option>
-                <option value="Habitación individual" th:selected="${tipo == 'Habitación individual'}">Habitación individual</option>
+                <option value="Vivienda completa" th:selected="${tipo == 'Vivienda completa'}">Vivienda completa
+                </option>
+                <option value="Habitación individual" th:selected="${tipo == 'Habitación individual'}">Habitación
+                    individual</option>
             </select>
         </p>
 
@@ -65,7 +69,14 @@
                 <td th:text="${propiedad.precioPorNoche} + ' €'">Precio</td>
                 <td th:text="${propiedad.reservaInmediata ? 'Sí' : 'No'}">Reserva inmediata</td>
                 <td th:text="${propiedad.descripcion}">Descripción</td>
-                <td><a th:href="@{/reservas/nueva(propiedadId=${propiedad.id})}">Reservar</a></td>
+                <td>
+                    <a th:href="@{/reservas/nueva(propiedadId=${propiedad.id})}">Reservar</a>
+
+                    <form th:action="@{/lista-deseos/{propiedadId}/anadir(propiedadId=${propiedad.id})}" method="post"
+                        style="display:inline;">
+                        <button type="submit">Añadir a lista de deseos</button>
+                    </form>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -74,4 +85,5 @@
         <a href="/">Volver al inicio</a>
     </p>
 </body>
+
 </html>
