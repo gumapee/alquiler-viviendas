@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Controller
 public class ReservaController {
@@ -50,7 +51,8 @@ public class ReservaController {
             @RequestParam String emailInquilino,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaEntrada,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaSalida,
-            @RequestParam String metodoPago) {
+            @RequestParam String metodoPago,
+            Model model) {
 
         Propiedad propiedad = propiedadRepository.findById(propiedadId).orElse(null);
 
@@ -58,12 +60,19 @@ public class ReservaController {
             return "redirect:/propiedades";
         }
 
-        long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
-
-        if (noches <= 0) {
-            noches = 1;
+        if (!fechaSalida.isAfter(fechaEntrada)) {
+            model.addAttribute("propiedad", propiedad);
+            model.addAttribute("error", "La fecha de salida debe ser posterior a la fecha de entrada.");
+            return "nueva-reserva";
         }
 
+        if (!propiedadDisponible(propiedadId, fechaEntrada, fechaSalida)) {
+            model.addAttribute("propiedad", propiedad);
+            model.addAttribute("error", "La propiedad ya tiene una reserva confirmada para las fechas seleccionadas.");
+            return "nueva-reserva";
+        }
+
+        long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
         double importeTotal = noches * propiedad.getPrecioPorNoche();
 
         String estado = propiedad.isReservaInmediata() ? "CONFIRMADA" : "PENDIENTE";
@@ -82,5 +91,22 @@ public class ReservaController {
         reservaRepository.save(reserva);
 
         return "redirect:/reservas";
+    }
+
+    private boolean propiedadDisponible(Long propiedadId, LocalDate nuevaEntrada, LocalDate nuevaSalida) {
+        List<Reserva> reservas = reservaRepository.findByPropiedadId(propiedadId);
+
+        for (Reserva reserva : reservas) {
+            boolean reservaConfirmada = reserva.getEstado().equals("CONFIRMADA");
+
+            boolean fechasSolapadas = nuevaEntrada.isBefore(reserva.getFechaSalida())
+                    && nuevaSalida.isAfter(reserva.getFechaEntrada());
+
+            if (reservaConfirmada && fechasSolapadas) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
