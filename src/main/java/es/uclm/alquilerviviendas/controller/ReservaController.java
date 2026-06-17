@@ -19,6 +19,15 @@ import java.util.List;
 @Controller
 public class ReservaController {
 
+    private static final String ESTADO_PENDIENTE = "PENDIENTE";
+    private static final String ESTADO_CONFIRMADA = "CONFIRMADA";
+    private static final String ESTADO_RECHAZADA_DEVOLUCION = "RECHAZADA - DEVOLUCIÓN REALIZADA";
+
+    private static final String VISTA_NUEVA_RESERVA = "nueva-reserva";
+
+    private static final String REDIRECT_RESERVAS = "redirect:/reservas";
+    private static final String REDIRECT_PROPIEDADES = "redirect:/propiedades";
+
     private final ReservaRepository reservaRepository;
     private final PropiedadRepository propiedadRepository;
 
@@ -38,11 +47,11 @@ public class ReservaController {
         Propiedad propiedad = propiedadRepository.findById(propiedadId).orElse(null);
 
         if (propiedad == null) {
-            return "redirect:/propiedades";
+            return REDIRECT_PROPIEDADES;
         }
 
         model.addAttribute("propiedad", propiedad);
-        return "nueva-reserva";
+        return VISTA_NUEVA_RESERVA;
     }
 
     @PostMapping("/reservas")
@@ -58,25 +67,25 @@ public class ReservaController {
         Propiedad propiedad = propiedadRepository.findById(propiedadId).orElse(null);
 
         if (propiedad == null) {
-            return "redirect:/propiedades";
+            return REDIRECT_PROPIEDADES;
         }
 
         if (!fechaSalida.isAfter(fechaEntrada)) {
             model.addAttribute("propiedad", propiedad);
             model.addAttribute("error", "La fecha de salida debe ser posterior a la fecha de entrada.");
-            return "nueva-reserva";
+            return VISTA_NUEVA_RESERVA;
         }
 
         if (!propiedadDisponible(propiedadId, fechaEntrada, fechaSalida)) {
             model.addAttribute("propiedad", propiedad);
             model.addAttribute("error", "La propiedad ya tiene una reserva confirmada para las fechas seleccionadas.");
-            return "nueva-reserva";
+            return VISTA_NUEVA_RESERVA;
         }
 
         long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
         double importeTotal = noches * propiedad.getPrecioPorNoche();
 
-        String estado = propiedad.isReservaInmediata() ? "CONFIRMADA" : "PENDIENTE";
+        String estado = propiedad.isReservaInmediata() ? ESTADO_CONFIRMADA : ESTADO_PENDIENTE;
 
         Reserva reserva = new Reserva(
                 nombreInquilino,
@@ -91,48 +100,48 @@ public class ReservaController {
 
         reservaRepository.save(reserva);
 
-        return "redirect:/reservas";
+        return REDIRECT_RESERVAS;
     }
 
     @PostMapping("/reservas/{id}/confirmar")
     public String confirmarReserva(@PathVariable Long id) {
         Reserva reserva = reservaRepository.findById(id).orElse(null);
 
-        if (reserva == null || !reserva.getEstado().equals("PENDIENTE")) {
-            return "redirect:/reservas";
+        if (reserva == null || !reserva.getEstado().equals(ESTADO_PENDIENTE)) {
+            return REDIRECT_RESERVAS;
         }
 
         if (!propiedadDisponible(reserva.getPropiedad().getId(), reserva.getFechaEntrada(), reserva.getFechaSalida())) {
-            reserva.setEstado("RECHAZADA - DEVOLUCIÓN REALIZADA");
+            reserva.setEstado(ESTADO_RECHAZADA_DEVOLUCION);
             reservaRepository.save(reserva);
-            return "redirect:/reservas";
+            return REDIRECT_RESERVAS;
         }
 
-        reserva.setEstado("CONFIRMADA");
+        reserva.setEstado(ESTADO_CONFIRMADA);
         reservaRepository.save(reserva);
 
         rechazarSolicitudesSolapadas(reserva);
 
-        return "redirect:/reservas";
+        return REDIRECT_RESERVAS;
     }
 
     @PostMapping("/reservas/{id}/rechazar")
     public String rechazarReserva(@PathVariable Long id) {
         Reserva reserva = reservaRepository.findById(id).orElse(null);
 
-        if (reserva != null && reserva.getEstado().equals("PENDIENTE")) {
-            reserva.setEstado("RECHAZADA - DEVOLUCIÓN REALIZADA");
+        if (reserva != null && reserva.getEstado().equals(ESTADO_PENDIENTE)) {
+            reserva.setEstado(ESTADO_RECHAZADA_DEVOLUCION);
             reservaRepository.save(reserva);
         }
 
-        return "redirect:/reservas";
+        return REDIRECT_RESERVAS;
     }
 
     private boolean propiedadDisponible(Long propiedadId, LocalDate nuevaEntrada, LocalDate nuevaSalida) {
         List<Reserva> reservas = reservaRepository.findByPropiedadId(propiedadId);
 
         for (Reserva reserva : reservas) {
-            boolean reservaConfirmada = reserva.getEstado().equals("CONFIRMADA");
+            boolean reservaConfirmada = reserva.getEstado().equals(ESTADO_CONFIRMADA);
 
             boolean fechasSolapadas = nuevaEntrada.isBefore(reserva.getFechaSalida())
                     && nuevaSalida.isAfter(reserva.getFechaEntrada());
@@ -150,13 +159,13 @@ public class ReservaController {
 
         for (Reserva reserva : reservas) {
             boolean esOtraReserva = !reserva.getId().equals(reservaConfirmada.getId());
-            boolean estaPendiente = reserva.getEstado().equals("PENDIENTE");
+            boolean estaPendiente = reserva.getEstado().equals(ESTADO_PENDIENTE);
 
             boolean fechasSolapadas = reserva.getFechaEntrada().isBefore(reservaConfirmada.getFechaSalida())
                     && reserva.getFechaSalida().isAfter(reservaConfirmada.getFechaEntrada());
 
             if (esOtraReserva && estaPendiente && fechasSolapadas) {
-                reserva.setEstado("RECHAZADA - DEVOLUCIÓN REALIZADA");
+                reserva.setEstado(ESTADO_RECHAZADA_DEVOLUCION);
                 reservaRepository.save(reserva);
             }
         }
