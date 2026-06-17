@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Propiedades disponibles</title>
+</head>
+<body>
+    <h1>Propiedades disponibles</h1>
+
+    <p>Listado de viviendas y habitaciones registradas en el sistema.</p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Ciudad</th>
+                <th>Dirección</th>
+                <th>Tipo</th>
+                <th>Precio por noche</th>
+                <th>Reserva inmediata</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="propiedad : ${propiedades}">
+                <td th:text="${propiedad.titulo}">Título</td>
+                <td th:text="${propiedad.ciudad}">Ciudad</td>
+                <td th:text="${propiedad.direccion}">Dirección</td>
+                <td th:text="${propiedad.tipo}">Tipo</td>
+                <td th:text="${propiedad.precioPorNoche} + ' €'">Precio</td>
+                <td th:text="${propiedad.reservaInmediata ? 'Sí' : 'No'}">Reserva inmediata</td>
+                <td th:text="${propiedad.descripcion}">Descripción</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <a href="/">Volver al inicio</a>
+    </p>
+</body>
+</html>
