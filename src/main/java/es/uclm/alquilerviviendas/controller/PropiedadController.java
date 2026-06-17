@@ -76,8 +76,14 @@ public class PropiedadController {
     }
 
     @PostMapping("/propiedades")
-    public String guardarPropiedad(Propiedad propiedad) {
-        propiedadRepository.save(propiedad);
-        return "redirect:/propiedades";
+public String guardarPropiedad(Propiedad propiedad, Model model) {
+    if (propiedad.getPrecioPorNoche() <= 0) {
+        model.addAttribute("propiedad", propiedad);
+        model.addAttribute("error", "El precio por noche debe ser mayor que 0.");
+        return "nueva-propiedad";
     }
+
+    propiedadRepository.save(propiedad);
+    return "redirect:/propiedades";
+}
 }

@@ -5,7 +5,7 @@
     <title>Registrar propiedad</title>
 </head>
 <body>
-    <h1>Registrar nueva propiedad</h1>
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
 
     <form th:action="@{/propiedades}" th:object="${propiedad}" method="post">
 
