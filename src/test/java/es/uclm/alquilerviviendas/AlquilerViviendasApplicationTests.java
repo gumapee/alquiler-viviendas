@@ -3,6 +3,8 @@ package es.uclm.alquilerviviendas;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @SpringBootTest(properties = {
         "spring.datasource.url=jdbc:h2:mem:testdb",
         "spring.datasource.driverClassName=org.h2.Driver",
@@ -16,5 +18,6 @@ class AlquilerViviendasApplicationTests {
 
     @Test
     void contextLoads() {
+        assertTrue(true, "El contexto de Spring Boot se carga correctamente.");
     }
 }

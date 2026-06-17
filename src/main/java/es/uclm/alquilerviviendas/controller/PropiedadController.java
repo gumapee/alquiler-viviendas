@@ -13,6 +13,11 @@ import java.util.List;
 @Controller
 public class PropiedadController {
 
+    private static final String PROPIEDADES = "propiedades";
+    private static final String CIUDAD = "ciudad";
+    private static final String TIPO = "tipo";
+    private static final String RESERVA_INMEDIATA = "reservaInmediata";
+
     private final PropiedadRepository propiedadRepository;
 
     public PropiedadController(PropiedadRepository propiedadRepository) {
@@ -21,11 +26,11 @@ public class PropiedadController {
 
     @GetMapping("/propiedades")
     public String listarPropiedades(Model model) {
-        model.addAttribute("propiedades", propiedadRepository.findAll());
-        model.addAttribute("ciudad", "");
-        model.addAttribute("tipo", "");
-        model.addAttribute("reservaInmediata", "");
-        return "propiedades";
+        model.addAttribute(PROPIEDADES, propiedadRepository.findAll());
+        model.addAttribute(CIUDAD, "");
+        model.addAttribute(TIPO, "");
+        model.addAttribute(RESERVA_INMEDIATA, "");
+        return PROPIEDADES;
     }
 
     @GetMapping("/propiedades/buscar")
@@ -56,12 +61,12 @@ public class PropiedadController {
                     .toList();
         }
 
-        model.addAttribute("propiedades", propiedades);
-        model.addAttribute("ciudad", ciudad);
-        model.addAttribute("tipo", tipo);
-        model.addAttribute("reservaInmediata", reservaInmediata);
+        model.addAttribute(PROPIEDADES, propiedades);
+        model.addAttribute(CIUDAD, ciudad);
+        model.addAttribute(TIPO, tipo);
+        model.addAttribute(RESERVA_INMEDIATA, reservaInmediata);
 
-        return "propiedades";
+        return PROPIEDADES;
     }
 
     @GetMapping("/propiedades/nueva")

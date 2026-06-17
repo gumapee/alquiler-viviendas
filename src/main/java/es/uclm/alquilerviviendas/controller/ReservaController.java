@@ -23,6 +23,9 @@ public class ReservaController {
     private static final String ESTADO_CONFIRMADA = "CONFIRMADA";
     private static final String ESTADO_RECHAZADA_DEVOLUCION = "RECHAZADA - DEVOLUCIÓN REALIZADA";
 
+    private static final String ATRIBUTO_PROPIEDAD = "propiedad";
+    private static final String ATRIBUTO_ERROR = "error";
+
     private static final String VISTA_NUEVA_RESERVA = "nueva-reserva";
 
     private static final String REDIRECT_RESERVAS = "redirect:/reservas";
@@ -50,7 +53,7 @@ public class ReservaController {
             return REDIRECT_PROPIEDADES;
         }
 
-        model.addAttribute("propiedad", propiedad);
+        model.addAttribute(ATRIBUTO_PROPIEDAD, propiedad);
         return VISTA_NUEVA_RESERVA;
     }
 
@@ -71,31 +74,24 @@ public class ReservaController {
         }
 
         if (!fechaSalida.isAfter(fechaEntrada)) {
-            model.addAttribute("propiedad", propiedad);
-            model.addAttribute("error", "La fecha de salida debe ser posterior a la fecha de entrada.");
+            model.addAttribute(ATRIBUTO_PROPIEDAD, propiedad);
+            model.addAttribute(ATRIBUTO_ERROR, "La fecha de salida debe ser posterior a la fecha de entrada.");
             return VISTA_NUEVA_RESERVA;
         }
 
         if (!propiedadDisponible(propiedadId, fechaEntrada, fechaSalida)) {
-            model.addAttribute("propiedad", propiedad);
-            model.addAttribute("error", "La propiedad ya tiene una reserva confirmada para las fechas seleccionadas.");
+            model.addAttribute(ATRIBUTO_PROPIEDAD, propiedad);
+            model.addAttribute(ATRIBUTO_ERROR, "La propiedad ya tiene una reserva confirmada para las fechas seleccionadas.");
             return VISTA_NUEVA_RESERVA;
         }
 
-        long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
-        double importeTotal = noches * propiedad.getPrecioPorNoche();
-
-        String estado = propiedad.isReservaInmediata() ? ESTADO_CONFIRMADA : ESTADO_PENDIENTE;
-
-        Reserva reserva = new Reserva(
+        Reserva reserva = crearReserva(
+                propiedad,
                 nombreInquilino,
                 emailInquilino,
                 fechaEntrada,
                 fechaSalida,
-                metodoPago,
-                estado,
-                importeTotal,
-                propiedad
+                metodoPago
         );
 
         reservaRepository.save(reserva);
@@ -135,6 +131,31 @@ public class ReservaController {
         }
 
         return REDIRECT_RESERVAS;
+    }
+
+    private Reserva crearReserva(
+            Propiedad propiedad,
+            String nombreInquilino,
+            String emailInquilino,
+            LocalDate fechaEntrada,
+            LocalDate fechaSalida,
+            String metodoPago) {
+
+        long noches = ChronoUnit.DAYS.between(fechaEntrada, fechaSalida);
+        double importeTotal = noches * propiedad.getPrecioPorNoche();
+        String estado = propiedad.isReservaInmediata() ? ESTADO_CONFIRMADA : ESTADO_PENDIENTE;
+
+        Reserva reserva = new Reserva();
+        reserva.setNombreInquilino(nombreInquilino);
+        reserva.setEmailInquilino(emailInquilino);
+        reserva.setFechaEntrada(fechaEntrada);
+        reserva.setFechaSalida(fechaSalida);
+        reserva.setMetodoPago(metodoPago);
+        reserva.setEstado(estado);
+        reserva.setImporteTotal(importeTotal);
+        reserva.setPropiedad(propiedad);
+
+        return reserva;
     }
 
     private boolean propiedadDisponible(Long propiedadId, LocalDate nuevaEntrada, LocalDate nuevaSalida) {

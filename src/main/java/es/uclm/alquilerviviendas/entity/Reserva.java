@@ -26,22 +26,6 @@ public class Reserva {
     @ManyToOne
     private Propiedad propiedad;
 
-    public Reserva() {
-    }
-
-    public Reserva(String nombreInquilino, String emailInquilino, LocalDate fechaEntrada,
-                   LocalDate fechaSalida, String metodoPago, String estado,
-                   double importeTotal, Propiedad propiedad) {
-        this.nombreInquilino = nombreInquilino;
-        this.emailInquilino = emailInquilino;
-        this.fechaEntrada = fechaEntrada;
-        this.fechaSalida = fechaSalida;
-        this.metodoPago = metodoPago;
-        this.estado = estado;
-        this.importeTotal = importeTotal;
-        this.propiedad = propiedad;
-    }
-
     public Long getId() {
         return id;
     }
