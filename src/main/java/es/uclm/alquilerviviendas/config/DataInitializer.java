@@ -20,7 +20,7 @@ public class DataInitializer implements CommandLineRunner {
             propiedadRepository.save(new Propiedad(
                     "Apartamento céntrico",
                     "Madrid",
-                    "Calle Mayor 10",
+                    "Calle Mayor n/10",
                     "Vivienda completa",
                     85.0,
                     true,
@@ -30,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
             propiedadRepository.save(new Propiedad(
                     "Habitación privada cerca de la universidad",
                     "Toledo",
-                    "Avenida Universidad 5",
+                    "Avenida Universidad n/5",
                     "Habitación individual",
                     35.0,
                     false,
@@ -40,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
             propiedadRepository.save(new Propiedad(
                     "Casa rural con piscina",
                     "Cuenca",
-                    "Camino del Río 22",
+                    "Camino del Río n/22",
                     "Vivienda completa",
                     120.0,
                     true,
