@@ -53,6 +53,7 @@
                 <th>Precio por noche</th>
                 <th>Reserva inmediata</th>
                 <th>Descripción</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -64,6 +65,7 @@
                 <td th:text="${propiedad.precioPorNoche} + ' €'">Precio</td>
                 <td th:text="${propiedad.reservaInmediata ? 'Sí' : 'No'}">Reserva inmediata</td>
                 <td th:text="${propiedad.descripcion}">Descripción</td>
+                <td><a th:href="@{/reservas/nueva(propiedadId=${propiedad.id})}">Reservar</a></td>
             </tr>
         </tbody>
     </table>

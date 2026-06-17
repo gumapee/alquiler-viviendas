@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis reservas</title>
+</head>
+<body>
+    <h1>Mis reservas</h1>
+
+    <p>Listado de reservas realizadas en el sistema.</p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Propiedad</th>
+                <th>Inquilino</th>
+                <th>Email</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Método de pago</th>
+                <th>Importe total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reserva : ${reservas}">
+                <td th:text="${reserva.propiedad.titulo}">Propiedad</td>
+                <td th:text="${reserva.nombreInquilino}">Inquilino</td>
+                <td th:text="${reserva.emailInquilino}">Email</td>
+                <td th:text="${reserva.fechaEntrada}">Entrada</td>
+                <td th:text="${reserva.fechaSalida}">Salida</td>
+                <td th:text="${reserva.metodoPago}">Método</td>
+                <td th:text="${reserva.importeTotal} + ' €'">Importe</td>
+                <td th:text="${reserva.estado}">Estado</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        <a href="/propiedades">Ver propiedades</a>
+    </p>
+
+    <p>
+        <a href="/">Volver al inicio</a>
+    </p>
+</body>
+</html>
