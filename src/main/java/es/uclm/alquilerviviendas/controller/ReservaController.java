@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -93,6 +94,40 @@ public class ReservaController {
         return "redirect:/reservas";
     }
 
+    @PostMapping("/reservas/{id}/confirmar")
+    public String confirmarReserva(@PathVariable Long id) {
+        Reserva reserva = reservaRepository.findById(id).orElse(null);
+
+        if (reserva == null || !reserva.getEstado().equals("PENDIENTE")) {
+            return "redirect:/reservas";
+        }
+
+        if (!propiedadDisponible(reserva.getPropiedad().getId(), reserva.getFechaEntrada(), reserva.getFechaSalida())) {
+            reserva.setEstado("RECHAZADA - DEVOLUCIÓN REALIZADA");
+            reservaRepository.save(reserva);
+            return "redirect:/reservas";
+        }
+
+        reserva.setEstado("CONFIRMADA");
+        reservaRepository.save(reserva);
+
+        rechazarSolicitudesSolapadas(reserva);
+
+        return "redirect:/reservas";
+    }
+
+    @PostMapping("/reservas/{id}/rechazar")
+    public String rechazarReserva(@PathVariable Long id) {
+        Reserva reserva = reservaRepository.findById(id).orElse(null);
+
+        if (reserva != null && reserva.getEstado().equals("PENDIENTE")) {
+            reserva.setEstado("RECHAZADA - DEVOLUCIÓN REALIZADA");
+            reservaRepository.save(reserva);
+        }
+
+        return "redirect:/reservas";
+    }
+
     private boolean propiedadDisponible(Long propiedadId, LocalDate nuevaEntrada, LocalDate nuevaSalida) {
         List<Reserva> reservas = reservaRepository.findByPropiedadId(propiedadId);
 
@@ -108,5 +143,22 @@ public class ReservaController {
         }
 
         return true;
+    }
+
+    private void rechazarSolicitudesSolapadas(Reserva reservaConfirmada) {
+        List<Reserva> reservas = reservaRepository.findByPropiedadId(reservaConfirmada.getPropiedad().getId());
+
+        for (Reserva reserva : reservas) {
+            boolean esOtraReserva = !reserva.getId().equals(reservaConfirmada.getId());
+            boolean estaPendiente = reserva.getEstado().equals("PENDIENTE");
+
+            boolean fechasSolapadas = reserva.getFechaEntrada().isBefore(reservaConfirmada.getFechaSalida())
+                    && reserva.getFechaSalida().isAfter(reservaConfirmada.getFechaEntrada());
+
+            if (esOtraReserva && estaPendiente && fechasSolapadas) {
+                reserva.setEstado("RECHAZADA - DEVOLUCIÓN REALIZADA");
+                reservaRepository.save(reserva);
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@
                 <th>Método de pago</th>
                 <th>Importe total</th>
                 <th>Estado</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +33,22 @@
                 <td th:text="${reserva.metodoPago}">Método</td>
                 <td th:text="${reserva.importeTotal} + ' €'">Importe</td>
                 <td th:text="${reserva.estado}">Estado</td>
+                <td><form th:if="${reserva.estado == 'PENDIENTE'}"
+                        th:action="@{/reservas/{id}/confirmar(id=${reserva.id})}"
+                        method="post"
+                        style="display:inline;">
+                        <button type="submit">Confirmar</button>
+                    </form>
+
+                    <form th:if="${reserva.estado == 'PENDIENTE'}"
+                        th:action="@{/reservas/{id}/rechazar(id=${reserva.id})}"
+                        method="post"
+                        style="display:inline;">
+                        <button type="submit">Rechazar</button>
+                    </form>
+
+                    <span th:if="${reserva.estado != 'PENDIENTE'}">Sin acciones</span>
+                </td>
             </tr>
         </tbody>
     </table>
